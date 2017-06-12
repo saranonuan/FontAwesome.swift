@@ -149,7 +149,11 @@ private class FontLoader {
         let data = try! Data(contentsOf: fontURL)
 
         let provider = CGDataProvider(data: data as CFData)
-        let font = CGFont(provider!)
+        guard let font = CGFont(provider!) else {
+            NSException(name: NSExceptionName.internalInconsistencyException,
+                        reason: "Cannot load font", userInfo: nil).raise()
+            return
+        }
 
         var error: Unmanaged<CFError>?
         if !CTFontManagerRegisterGraphicsFont(font, &error) {
